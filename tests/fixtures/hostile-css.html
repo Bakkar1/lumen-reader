@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hostile page styles</title>
+    <!--
+      Global rules that would wreck any UI injected into the light DOM.
+      The player must look and behave exactly as it does on demo.html.
+    -->
+    <style>
+      * { all: unset; font-size: 40px; }
+      button { display: none !important; }
+      div, span, p, header, label { position: static !important; color: red !important; background: lime !important; }
+      svg, svg * { width: 300px !important; height: 300px !important; fill: magenta !important; }
+      select { display: none !important; }
+      * { letter-spacing: 5px !important; line-height: 4 !important; font-family: monospace !important; cursor: wait !important; }
+      body * { transform: rotate(3deg) !important; }
+      html, body { display: block; }
+    </style>
+  </head>
+  <body>
+    <p>The lighthouse keeper climbed the stairs at dusk. Each step was worn smooth by a century of boots.</p>
+    <p>At the top, he trimmed the wick and wound the clockwork. The lens began to turn.</p>
+    <p>Far out at sea, a small boat saw the beam. Its crew turned for home.</p>
+  </body>
+</html>

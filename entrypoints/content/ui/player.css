@@ -1,0 +1,420 @@
+/*
+ * Lumen Reader's player, inside a shadow root (design §7). Page CSS cannot
+ * reach in and nothing here reaches out. "Lamplight" palette: warm amber on
+ * deep ink, matching the reading highlights. Sizes are in px so the page's
+ * font size never scales the player.
+ */
+:host {
+  all: initial;
+}
+
+.root {
+  --ink: #1c2430;
+  --ink-2: #283445;
+  --line: #3a475c;
+  --paper: #f6f1e7;
+  --muted: #a9b3c1;
+  --amber: #f2b544;
+  --amber-ink: #33240a;
+  --notice-bg: rgba(242, 181, 68, 0.14);
+  --notice-ink: #f8d89a;
+  font: 500 13px/1.35 system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  color: var(--paper);
+}
+
+/*
+ * Light theme (synced "theme" setting, chosen in the popup): the roles flip,
+ * so "ink" is the ground and "paper" the type. "system" follows the OS.
+ */
+.root[data-theme='light'] {
+  --ink: #fbf7ef;
+  --ink-2: #efe6d6;
+  --line: #d6c8b0;
+  --paper: #1f2731;
+  --muted: #5f5648;
+  --amber: #c27a0e;
+  --amber-ink: #22170a;
+  --notice-bg: rgba(194, 122, 14, 0.12);
+  --notice-ink: #6e4300;
+}
+
+@media (prefers-color-scheme: light) {
+  .root[data-theme='system'] {
+    --ink: #fbf7ef;
+    --ink-2: #efe6d6;
+    --line: #d6c8b0;
+    --paper: #1f2731;
+    --muted: #5f5648;
+    --amber: #c27a0e;
+    --amber-ink: #22170a;
+    --notice-bg: rgba(194, 122, 14, 0.12);
+    --notice-ink: #6e4300;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+button {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+
+button:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+/* ---- The player ------------------------------------------------------ */
+
+.player {
+  position: fixed;
+  right: 12px;
+  width: 48px;
+  padding: 6px 6px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: var(--ink);
+  border-radius: 24px;
+  box-shadow:
+    0 8px 28px rgba(10, 14, 20, 0.3),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+  user-select: none;
+  transition:
+    width 160ms ease-out,
+    border-radius 160ms ease-out;
+}
+
+.player[data-expanded='true'] {
+  width: 272px;
+  padding: 6px 12px 12px;
+  align-items: stretch;
+  gap: 10px;
+  border-radius: 18px;
+}
+
+.grip {
+  align-self: center;
+  width: 32px;
+  height: 14px;
+  color: var(--muted);
+  cursor: grab;
+  touch-action: none;
+}
+
+.grip svg {
+  width: 16px;
+  height: 8px;
+}
+
+.player[data-dragging='true'] .grip {
+  cursor: grabbing;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.title {
+  flex: 1;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+}
+
+.icon {
+  width: 36px;
+  height: 36px;
+}
+
+.icon:hover:not(:disabled) {
+  background: var(--ink-2);
+}
+
+.head .icon {
+  width: 28px;
+  height: 28px;
+}
+
+.head svg {
+  width: 16px;
+  height: 16px;
+}
+
+.transport {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.player[data-expanded='true'] .transport {
+  flex-direction: row;
+  justify-content: center;
+  gap: 18px;
+}
+
+.play {
+  width: 36px;
+  height: 36px;
+  background: var(--amber);
+  color: var(--amber-ink);
+}
+
+.play:hover {
+  background: #f6c564;
+}
+
+.player[data-expanded='true'] .play {
+  width: 48px;
+  height: 48px;
+}
+
+.player[data-expanded='true'] .play svg {
+  width: 22px;
+  height: 22px;
+}
+
+.time {
+  font-size: 11px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.status {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Speed and voice --------------------------------------------------- */
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.label {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.step {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--line);
+}
+
+.step svg {
+  width: 14px;
+  height: 14px;
+}
+
+.rate {
+  min-width: 56px;
+  height: 28px;
+  padding: 0 10px;
+  background: var(--ink-2);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.rate[aria-expanded='true'] {
+  box-shadow: inset 0 0 0 1px var(--amber);
+}
+
+.presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.preset {
+  height: 26px;
+  padding: 0 10px;
+  font-size: 12px;
+  border: 1px solid var(--line);
+}
+
+.preset[aria-pressed='true'] {
+  background: var(--amber);
+  border-color: var(--amber);
+  color: var(--amber-ink);
+}
+
+.voice {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+select {
+  width: 100%;
+  padding: 6px 8px;
+  font: inherit;
+  color: var(--paper);
+  background: var(--ink-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.notice {
+  margin: 0;
+  padding: 6px 8px;
+  font-size: 12px;
+  color: var(--notice-ink);
+  background: var(--notice-bg);
+  border-radius: 8px;
+}
+
+/* ---- "Back to reading" and paragraph icons ----------------------------- */
+
+.chip {
+  position: absolute;
+  right: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+  gap: 6px;
+  height: 32px;
+  padding: 0 14px 0 10px;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 650;
+  background: var(--amber);
+  color: var(--amber-ink);
+  box-shadow: 0 4px 16px rgba(10, 14, 20, 0.25);
+}
+
+.chip svg {
+  width: 16px;
+  height: 16px;
+}
+
+.para-play {
+  position: fixed;
+  width: 28px;
+  height: 28px;
+  background: var(--ink);
+  color: var(--amber);
+  box-shadow: 0 3px 12px rgba(10, 14, 20, 0.25);
+}
+
+.para-play:hover {
+  background: var(--ink-2);
+}
+
+.para-play svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ---- Resume offer ------------------------------------------------------ */
+
+.offer {
+  position: absolute;
+  right: calc(100% + 8px);
+  top: 0;
+  width: 232px;
+  padding: 12px 36px 12px 14px;
+  display: grid;
+  gap: 10px;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 14px;
+  box-shadow:
+    0 8px 28px rgba(10, 14, 20, 0.3),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+  cursor: default;
+}
+
+.offer-text {
+  margin: 0;
+  font-weight: 600;
+}
+
+.offer-detail {
+  display: block;
+  margin-top: 2px;
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.offer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.offer-primary,
+.offer-secondary {
+  height: 30px;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.offer-primary {
+  background: var(--amber);
+  color: var(--amber-ink);
+}
+
+.offer-secondary {
+  border: 1px solid var(--line);
+}
+
+.offer-secondary:hover {
+  background: var(--ink-2);
+}
+
+.offer-close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 26px;
+  height: 26px;
+}
+
+.offer-close svg {
+  width: 14px;
+  height: 14px;
+}

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Getting started — Tidewater CLI docs</title>
+    <style>
+      body { margin: 0; display: flex; font-family: system-ui, sans-serif; }
+      .docs-nav { width: 240px; background: #fafafa; padding: 12px; }
+      main { flex: 1; padding: 12px 32px; }
+    </style>
+  </head>
+  <body>
+    <nav class="docs-nav" aria-label="Documentation">
+      <ul>
+        <li><a href="#">Introduction</a></li>
+        <li><a href="#">Installation</a></li>
+        <li><a href="#">Configuration reference</a></li>
+        <li><a href="#">Command reference</a></li>
+        <li><a href="#">Troubleshooting</a></li>
+      </ul>
+    </nav>
+    <main>
+      <div class="breadcrumb"><a href="#">Docs</a> / <a href="#">Guides</a> / Getting started</div>
+      <h1>Getting started</h1>
+      <h2>Introduction</h2>
+      <p>Tidewater is a small command-line tool that predicts tide times for any harbour in its database. This guide walks you through installing it and running your first query.</p>
+      <h2>Installation</h2>
+      <p>Download the archive for your platform and unpack it into a folder on your path. The tool has no other dependencies.</p>
+      <pre><code>tar -xzf tidewater.tar.gz -C ~/bin</code></pre>
+      <h2>Your first query</h2>
+      <p>Run the tool with the name of a harbour. It prints the next four tides with their heights in metres.</p>
+      <ul>
+        <li>Use quotes around names with spaces</li>
+        <li>Add a date to look ahead, for example 2026-12-24</li>
+        <li>Pass the metric flag to force metres</li>
+      </ul>
+      <table>
+        <tr><th>Option</th><th>Meaning</th></tr>
+        <tr><td>Days</td><td>How many days to show</td></tr>
+      </table>
+      <form><label>Was this page helpful? <input type="text" value="Typed feedback text" /></label><button>Send</button></form>
+    </main>
+  </body>
+</html>

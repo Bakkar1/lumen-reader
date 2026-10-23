@@ -1,0 +1,822 @@
+[
+  {
+    "voiceName": "Samantha",
+    "lang": "en-US",
+    "remote": false,
+    "durations": {
+      "1": 4694,
+      "2": 2173,
+      "3": 1512,
+      "2.5": 1704
+    },
+    "wordEvents": true,
+    "gapMs": 2,
+    "speedup": {
+      "1": 1,
+      "2": 2.16,
+      "3": 3.1,
+      "2.5": 2.75
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Albert",
+    "lang": "en-US",
+    "remote": false,
+    "durations": {
+      "1": 6530,
+      "2": 2110,
+      "3": 1470,
+      "2.5": 1736
+    },
+    "wordEvents": true,
+    "gapMs": 2,
+    "speedup": {
+      "1": 1,
+      "2": 3.09,
+      "3": 4.44,
+      "2.5": 3.76
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Bad News",
+    "lang": "en-US",
+    "remote": false,
+    "durations": {
+      "1": 9145,
+      "2": 2909,
+      "3": 2856,
+      "2.5": 2857
+    },
+    "wordEvents": true,
+    "gapMs": 2,
+    "speedup": {
+      "1": 1,
+      "2": 3.14,
+      "3": 3.2,
+      "2.5": 3.2
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Bahh",
+    "lang": "en-US",
+    "remote": false,
+    "durations": {
+      "1": 6443,
+      "2": 2109,
+      "3": 1470,
+      "2.5": 1725
+    },
+    "wordEvents": true,
+    "gapMs": 2,
+    "speedup": {
+      "1": 1,
+      "2": 3.06,
+      "3": 4.38,
+      "2.5": 3.74
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Bells",
+    "lang": "en-US",
+    "remote": false,
+    "durations": {
+      "1": 12409,
+      "2": 12147,
+      "3": 12115,
+      "2.5": 12136
+    },
+    "wordEvents": true,
+    "gapMs": null,
+    "speedup": {
+      "1": 1,
+      "2": 1.02,
+      "3": 1.02,
+      "2.5": 1.02
+    },
+    "cap": 1
+  },
+  {
+    "voiceName": "Boing",
+    "lang": "en-US",
+    "remote": false,
+    "durations": {
+      "1": 5811,
+      "2": 2120,
+      "3": 1469,
+      "2.5": 1736
+    },
+    "wordEvents": true,
+    "gapMs": 1,
+    "speedup": {
+      "1": 1,
+      "2": 2.74,
+      "3": 3.96,
+      "2.5": 3.35
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Bubbles",
+    "lang": "en-US",
+    "remote": false,
+    "durations": {
+      "1": 4876,
+      "2": 2110,
+      "3": 1480,
+      "2.5": 1736
+    },
+    "wordEvents": true,
+    "gapMs": 2,
+    "speedup": {
+      "1": 1,
+      "2": 2.31,
+      "3": 3.29,
+      "2.5": 2.81
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Cellos",
+    "lang": "en-US",
+    "remote": false,
+    "durations": {
+      "1": 7521,
+      "2": 3069,
+      "3": 3071,
+      "2.5": 3070
+    },
+    "wordEvents": true,
+    "gapMs": 1,
+    "speedup": {
+      "1": 1,
+      "2": 2.45,
+      "3": 2.45,
+      "2.5": 2.45
+    },
+    "cap": 2.5
+  },
+  {
+    "voiceName": "Daniel",
+    "lang": "en-GB",
+    "remote": false,
+    "durations": {
+      "1": 4594,
+      "2": 2249,
+      "3": 1555,
+      "2.5": 1757
+    },
+    "wordEvents": true,
+    "gapMs": 2,
+    "speedup": {
+      "1": 1,
+      "2": 2.04,
+      "3": 2.95,
+      "2.5": 2.61
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Eddy (English (United States))",
+    "lang": "en-US",
+    "remote": false,
+    "durations": {
+      "1": 5195,
+      "2": 2334,
+      "3": 1012,
+      "2.5": 1501
+    },
+    "wordEvents": true,
+    "gapMs": 1,
+    "speedup": {
+      "1": 1,
+      "2": 2.23,
+      "3": 5.13,
+      "2.5": 3.46
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Eddy (English (United Kingdom))",
+    "lang": "en-GB",
+    "remote": false,
+    "durations": {
+      "1": 4994,
+      "2": 2280,
+      "3": 1001,
+      "2.5": 1481
+    },
+    "wordEvents": true,
+    "gapMs": 1,
+    "speedup": {
+      "1": 1,
+      "2": 2.19,
+      "3": 4.99,
+      "2.5": 3.37
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Flo (English (United States))",
+    "lang": "en-US",
+    "remote": false,
+    "durations": {
+      "1": 5094,
+      "2": 2334,
+      "3": 1021,
+      "2.5": 1502
+    },
+    "wordEvents": true,
+    "gapMs": 2,
+    "speedup": {
+      "1": 1,
+      "2": 2.18,
+      "3": 4.99,
+      "2.5": 3.39
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Flo (English (United Kingdom))",
+    "lang": "en-GB",
+    "remote": false,
+    "durations": {
+      "1": 4995,
+      "2": 2280,
+      "3": 1000,
+      "2.5": 1471
+    },
+    "wordEvents": true,
+    "gapMs": 1,
+    "speedup": {
+      "1": 1,
+      "2": 2.19,
+      "3": 5,
+      "2.5": 3.4
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Fred",
+    "lang": "en-US",
+    "remote": false,
+    "durations": {
+      "1": 4869,
+      "2": 2110,
+      "3": 1470,
+      "2.5": 1736
+    },
+    "wordEvents": true,
+    "gapMs": 2,
+    "speedup": {
+      "1": 1,
+      "2": 2.31,
+      "3": 3.31,
+      "2.5": 2.8
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Good News",
+    "lang": "en-US",
+    "remote": false,
+    "durations": {
+      "1": 13826,
+      "2": 3807,
+      "3": 3091,
+      "2.5": 3271
+    },
+    "wordEvents": true,
+    "gapMs": null,
+    "speedup": {
+      "1": 1,
+      "2": 3.63,
+      "3": 4.47,
+      "2.5": 4.23
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Grandma (English (United States))",
+    "lang": "en-US",
+    "remote": false,
+    "durations": {
+      "1": 5082,
+      "2": 2344,
+      "3": 1021,
+      "2.5": 1501
+    },
+    "wordEvents": true,
+    "gapMs": 2,
+    "speedup": {
+      "1": 1,
+      "2": 2.17,
+      "3": 4.98,
+      "2.5": 3.39
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Grandma (English (United Kingdom))",
+    "lang": "en-GB",
+    "remote": false,
+    "durations": {
+      "1": 4994,
+      "2": 2279,
+      "3": 1001,
+      "2.5": 1481
+    },
+    "wordEvents": true,
+    "gapMs": 1,
+    "speedup": {
+      "1": 1,
+      "2": 2.19,
+      "3": 4.99,
+      "2.5": 3.37
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Grandpa (English (United States))",
+    "lang": "en-US",
+    "remote": false,
+    "durations": {
+      "1": 5100,
+      "2": 2335,
+      "3": 1032,
+      "2.5": 1511
+    },
+    "wordEvents": true,
+    "gapMs": 2,
+    "speedup": {
+      "1": 1,
+      "2": 2.18,
+      "3": 4.94,
+      "2.5": 3.38
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Grandpa (English (United Kingdom))",
+    "lang": "en-GB",
+    "remote": false,
+    "durations": {
+      "1": 4993,
+      "2": 2280,
+      "3": 1002,
+      "2.5": 1481
+    },
+    "wordEvents": true,
+    "gapMs": 2,
+    "speedup": {
+      "1": 1,
+      "2": 2.19,
+      "3": 4.98,
+      "2.5": 3.37
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Jester",
+    "lang": "en-US",
+    "remote": false,
+    "durations": {
+      "1": 11768,
+      "2": 11497,
+      "3": 11465,
+      "2.5": 11487
+    },
+    "wordEvents": true,
+    "gapMs": null,
+    "speedup": {
+      "1": 1,
+      "2": 1.02,
+      "3": 1.03,
+      "2.5": 1.02
+    },
+    "cap": 1
+  },
+  {
+    "voiceName": "Junior",
+    "lang": "en-US",
+    "remote": false,
+    "durations": {
+      "1": 5071,
+      "2": 2110,
+      "3": 1460,
+      "2.5": 1736
+    },
+    "wordEvents": true,
+    "gapMs": 2,
+    "speedup": {
+      "1": 1,
+      "2": 2.4,
+      "3": 3.47,
+      "2.5": 2.92
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Karen",
+    "lang": "en-AU",
+    "remote": false,
+    "durations": {
+      "1": 4456,
+      "2": 2184,
+      "3": 1512,
+      "2.5": 1715
+    },
+    "wordEvents": true,
+    "gapMs": 2,
+    "speedup": {
+      "1": 1,
+      "2": 2.04,
+      "3": 2.95,
+      "2.5": 2.6
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Kathy",
+    "lang": "en-US",
+    "remote": false,
+    "durations": {
+      "1": 5081,
+      "2": 2109,
+      "3": 1470,
+      "2.5": 1736
+    },
+    "wordEvents": true,
+    "gapMs": 1,
+    "speedup": {
+      "1": 1,
+      "2": 2.41,
+      "3": 3.46,
+      "2.5": 2.93
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Moira",
+    "lang": "en-IE",
+    "remote": false,
+    "durations": {
+      "1": 4832,
+      "2": 2365,
+      "3": 1640,
+      "2.5": 1833
+    },
+    "wordEvents": true,
+    "gapMs": 2,
+    "speedup": {
+      "1": 1,
+      "2": 2.04,
+      "3": 2.95,
+      "2.5": 2.64
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Organ",
+    "lang": "en-US",
+    "remote": false,
+    "durations": {
+      "1": 8599,
+      "2": 3091,
+      "3": 3069,
+      "2.5": 3071
+    },
+    "wordEvents": true,
+    "gapMs": 2,
+    "speedup": {
+      "1": 1,
+      "2": 2.78,
+      "3": 2.8,
+      "2.5": 2.8
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Ralph",
+    "lang": "en-US",
+    "remote": false,
+    "durations": {
+      "1": 5080,
+      "2": 2110,
+      "3": 1470,
+      "2.5": 1736
+    },
+    "wordEvents": true,
+    "gapMs": 2,
+    "speedup": {
+      "1": 1,
+      "2": 2.41,
+      "3": 3.46,
+      "2.5": 2.93
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Reed (English (United States))",
+    "lang": "en-US",
+    "remote": false,
+    "durations": {
+      "1": 5091,
+      "2": 2324,
+      "3": 1021,
+      "2.5": 1492
+    },
+    "wordEvents": true,
+    "gapMs": 2,
+    "speedup": {
+      "1": 1,
+      "2": 2.19,
+      "3": 4.99,
+      "2.5": 3.41
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Reed (English (United Kingdom))",
+    "lang": "en-GB",
+    "remote": false,
+    "durations": {
+      "1": 4986,
+      "2": 2280,
+      "3": 1011,
+      "2.5": 1469
+    },
+    "wordEvents": true,
+    "gapMs": 1,
+    "speedup": {
+      "1": 1,
+      "2": 2.19,
+      "3": 4.93,
+      "2.5": 3.39
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Rishi",
+    "lang": "en-IN",
+    "remote": false,
+    "durations": {
+      "1": 4960,
+      "2": 2483,
+      "3": 1705,
+      "2.5": 1928
+    },
+    "wordEvents": true,
+    "gapMs": 2,
+    "speedup": {
+      "1": 1,
+      "2": 2,
+      "3": 2.91,
+      "2.5": 2.57
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Rocko (English (United States))",
+    "lang": "en-US",
+    "remote": false,
+    "durations": {
+      "1": 5087,
+      "2": 2334,
+      "3": 1012,
+      "2.5": 1502
+    },
+    "wordEvents": true,
+    "gapMs": 1,
+    "speedup": {
+      "1": 1,
+      "2": 2.18,
+      "3": 5.03,
+      "2.5": 3.39
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Rocko (English (United Kingdom))",
+    "lang": "en-GB",
+    "remote": false,
+    "durations": {
+      "1": 4984,
+      "2": 2280,
+      "3": 1002,
+      "2.5": 1459
+    },
+    "wordEvents": true,
+    "gapMs": 1,
+    "speedup": {
+      "1": 1,
+      "2": 2.19,
+      "3": 4.97,
+      "2.5": 3.42
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Sandy (English (United States))",
+    "lang": "en-US",
+    "remote": false,
+    "durations": {
+      "1": 5102,
+      "2": 2324,
+      "3": 1012,
+      "2.5": 1492
+    },
+    "wordEvents": true,
+    "gapMs": 1,
+    "speedup": {
+      "1": 1,
+      "2": 2.2,
+      "3": 5.04,
+      "2.5": 3.42
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Sandy (English (United Kingdom))",
+    "lang": "en-GB",
+    "remote": false,
+    "durations": {
+      "1": 4993,
+      "2": 2270,
+      "3": 1010,
+      "2.5": 1460
+    },
+    "wordEvents": true,
+    "gapMs": 2,
+    "speedup": {
+      "1": 1,
+      "2": 2.2,
+      "3": 4.94,
+      "2.5": 3.42
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Shelley (English (United States))",
+    "lang": "en-US",
+    "remote": false,
+    "durations": {
+      "1": 5094,
+      "2": 2324,
+      "3": 1021,
+      "2.5": 1492
+    },
+    "wordEvents": true,
+    "gapMs": 2,
+    "speedup": {
+      "1": 1,
+      "2": 2.19,
+      "3": 4.99,
+      "2.5": 3.41
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Shelley (English (United Kingdom))",
+    "lang": "en-GB",
+    "remote": false,
+    "durations": {
+      "1": 4979,
+      "2": 2280,
+      "3": 1011,
+      "2.5": 1480
+    },
+    "wordEvents": true,
+    "gapMs": 1,
+    "speedup": {
+      "1": 1,
+      "2": 2.18,
+      "3": 4.92,
+      "2.5": 3.36
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Superstar",
+    "lang": "en-US",
+    "remote": false,
+    "durations": {
+      "1": 5080,
+      "2": 2099,
+      "3": 1470,
+      "2.5": 1737
+    },
+    "wordEvents": true,
+    "gapMs": 2,
+    "speedup": {
+      "1": 1,
+      "2": 2.42,
+      "3": 3.46,
+      "2.5": 2.92
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Tessa",
+    "lang": "en-ZA",
+    "remote": false,
+    "durations": {
+      "1": 5059,
+      "2": 2515,
+      "3": 1748,
+      "2.5": 1971
+    },
+    "wordEvents": true,
+    "gapMs": 2,
+    "speedup": {
+      "1": 1,
+      "2": 2.01,
+      "3": 2.89,
+      "2.5": 2.57
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Trinoids",
+    "lang": "en-US",
+    "remote": false,
+    "durations": {
+      "1": 4887,
+      "2": 2099,
+      "3": 1469,
+      "2.5": 1736
+    },
+    "wordEvents": true,
+    "gapMs": 1,
+    "speedup": {
+      "1": 1,
+      "2": 2.33,
+      "3": 3.33,
+      "2.5": 2.82
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Whisper",
+    "lang": "en-US",
+    "remote": false,
+    "durations": {
+      "1": 5293,
+      "2": 2099,
+      "3": 1470,
+      "2.5": 1737
+    },
+    "wordEvents": true,
+    "gapMs": 2,
+    "speedup": {
+      "1": 1,
+      "2": 2.52,
+      "3": 3.6,
+      "2.5": 3.05
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Wobble",
+    "lang": "en-US",
+    "remote": false,
+    "durations": {
+      "1": 5286,
+      "2": 2099,
+      "3": 1471,
+      "2.5": 1736
+    },
+    "wordEvents": true,
+    "gapMs": 2,
+    "speedup": {
+      "1": 1,
+      "2": 2.52,
+      "3": 3.59,
+      "2.5": 3.04
+    },
+    "cap": 3
+  },
+  {
+    "voiceName": "Zarvox",
+    "lang": "en-US",
+    "remote": false,
+    "durations": {
+      "1": 4889,
+      "2": 2100,
+      "3": 1470,
+      "2.5": 1737
+    },
+    "wordEvents": true,
+    "gapMs": 2,
+    "speedup": {
+      "1": 1,
+      "2": 2.33,
+      "3": 3.33,
+      "2.5": 2.81
+    },
+    "cap": 3
+  }
+]

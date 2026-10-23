@@ -1,0 +1,44 @@
+{
+  "Samantha": {
+    "lang": "en-US",
+    "verdicts": {
+      "2": "distorted"
+    },
+    "cap": "<2"
+  },
+  "Daniel": {
+    "lang": "en-GB",
+    "verdicts": {
+      "2": "distorted"
+    },
+    "cap": "<2"
+  },
+  "Eddy (English (United States))": {
+    "lang": "en-US",
+    "verdicts": {
+      "2": "distorted"
+    },
+    "cap": "<2"
+  },
+  "Karen": {
+    "lang": "en-AU",
+    "verdicts": {
+      "2": "distorted"
+    },
+    "cap": "<2"
+  },
+  "Moira": {
+    "lang": "en-IE",
+    "verdicts": {
+      "2": "distorted"
+    },
+    "cap": "<2"
+  },
+  "Reed (English (United States))": {
+    "lang": "en-US",
+    "verdicts": {
+      "2": "distorted"
+    },
+    "cap": "<2"
+  }
+}

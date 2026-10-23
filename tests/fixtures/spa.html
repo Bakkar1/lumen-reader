@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Reader app snapshot</title>
+    <style>
+      body { margin: 0; font-family: sans-serif; }
+      .app-shell { display: grid; grid-template-columns: 200px 1fr; }
+      .app-menu { background: #222; color: #ddd; padding: 8px; }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div class="app-shell">
+        <div class="app-menu" role="navigation">
+          <div><a href="#">Inbox</a></div>
+          <div><a href="#">Saved</a></div>
+          <div><a href="#">Settings</a></div>
+        </div>
+        <div class="app-content">
+          <section class="story">
+            <p id="p1">The night train left the city exactly on time. Most of the passengers were already asleep before the last suburb slid past the windows.</p>
+            <p id="p2">In the dining car a waiter polished glasses that nobody would use. He liked the quiet hours best, when the rails sang and the lamps swayed.</p>
+            <p id="p3">Somewhere past midnight the train slowed for a single lit platform in the snow. No one got on, and no one got off.</p>
+          </section>
+        </div>
+      </div>
+    </div>
+    <!-- A framework re-renders paragraphs by replacing them with identical copies. -->
+    <script>
+      window.rerender = (id) => {
+        const old = document.getElementById(id);
+        const copy = old.cloneNode(true);
+        old.replaceWith(copy);
+      };
+      window.removePara = (id) => document.getElementById(id).remove();
+    </script>
+  </body>
+</html>
