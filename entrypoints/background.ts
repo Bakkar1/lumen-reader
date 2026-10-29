@@ -115,6 +115,8 @@ export default defineBackground(() => {
         void controller.setVoice(message.voiceName).then(broadcastState);
         break;
       case 'getVoices':
+        // The player asks when it expands, which is usually just before play is pressed.
+        engine.prepare();
         void engine.getVoices().then(
           (voices) => registry.send(tabId, { type: 'voices', voices }, frameId),
           () => {},
@@ -143,6 +145,8 @@ export default defineBackground(() => {
    * tabs.sendMessage.
    */
   async function requestStart(tabId: number, mode: StartMode = 'auto', frameId?: number): Promise<void> {
+    // The model loads while the page's text is found and extracted.
+    engine.prepare();
     const message: BackgroundToTab = { type: 'requestStart', mode };
     const target = frameId ?? (await chooseFrame(tabId, mode));
     if (target === null) return;
@@ -182,6 +186,8 @@ export default defineBackground(() => {
     await ready;
     switch (request.type) {
       case 'popup:getState':
+        // Opening the popup is usually the first step towards pressing play.
+        engine.prepare();
         return controller.getState(request.tabId);
       case 'popup:control': {
         const handled = controller.control(request.tabId, request.action);

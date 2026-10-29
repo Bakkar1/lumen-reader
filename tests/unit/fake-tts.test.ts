@@ -114,7 +114,7 @@ describe('FakeTtsEngine', () => {
     tts.pause();
     await vi.advanceTimersByTimeAsync(1000);
     expect(r.log.map((e) => e.type)).toEqual(['start', 'word', 'word']);
-    tts.resume();
+    expect(await tts.resume()).toBe(true);
     await vi.runAllTimersAsync();
 
     expect(r.log.slice(3)).toEqual([

@@ -36,6 +36,12 @@ export class KokoroTtsEngine implements TtsEngine {
     return { wordEvents: true, minRate: 0.5, maxRate: voiceCap(voiceName) };
   }
 
+  /** Opens the offscreen document, whose worker starts loading the model at once. */
+  prepare(): void {
+    const opened = this.outbox.then(() => this.ensureDocument());
+    this.outbox = opened.catch(() => {});
+  }
+
   speak(text: string, options: SpeakOptions, onEvent: (event: TtsEvent) => void): void {
     const id = ++this.nextId;
     this.callbacks.set(id, onEvent);
@@ -49,8 +55,9 @@ export class KokoroTtsEngine implements TtsEngine {
     void this.send({ type: 'pause' }, false).catch(() => {});
   }
 
-  resume(): void {
-    void this.send({ type: 'resume' }, false).catch(() => {});
+  async resume(): Promise<boolean> {
+    // No document: whatever was paused went with it.
+    return (await this.send({ type: 'resume' }, false).catch(() => false)) === true;
   }
 
   stop(): void {

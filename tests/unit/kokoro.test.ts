@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { splitChunks, wordTimings } from '@/lib/tts/kokoro/chunks';
+import { FIRST_CHUNK_CHARS, splitChunks, wordTimings } from '@/lib/tts/kokoro/chunks';
 import { KokoroPlayer, type AudioOut, type Synthesis } from '@/lib/tts/kokoro/player';
 import { DEFAULT_KOKORO_VOICE, KOKORO_VOICES, kokoroVoice } from '@/lib/tts/kokoro/voices';
 import type { TtsEvent } from '@/lib/tts/engine';
@@ -31,6 +31,13 @@ describe('splitChunks', () => {
     for (const c of chunks) expect(text.slice(c.offset, c.offset + c.text.length)).toBe(c.text);
     for (const c of chunks) expect(c.text.length).toBeLessThanOrEqual(12);
   });
+
+  it('can hold only the first chunk to a shorter limit', () => {
+    const text = 'aaaa, bbbb cccc dddd. eeee ffff gggg hhhh.';
+    const chunks = splitChunks(text, 30, 8);
+    expect(chunks.map((c) => c.text)).toEqual(['aaaa,', 'bbbb cccc dddd.', 'eeee ffff gggg hhhh.']);
+    for (const c of chunks) expect(text.slice(c.offset, c.offset + c.text.length)).toBe(c.text);
+  });
 });
 
 describe('wordTimings', () => {
@@ -55,7 +62,7 @@ describe('Kokoro voices', () => {
 function fakeAudio() {
   let suspendedAt: number | null = null;
   let offset = 0;
-  const played: { at: number; samples: number }[] = [];
+  const played: { at: number; samples: number; offset: number }[] = [];
   const stopped: number[] = [];
   const out: AudioOut = {
     get currentTime() {
@@ -68,8 +75,8 @@ function fakeAudio() {
       if (suspendedAt !== null) offset += (Date.now() - suspendedAt) / 1000;
       suspendedAt = null;
     },
-    play({ audio, sampleRate }, at) {
-      const i = played.push({ at, samples: audio.length }) - 1;
+    play({ audio, sampleRate }, at, offset = 0) {
+      const i = played.push({ at, samples: audio.length, offset }) - 1;
       return { duration: audio.length / sampleRate, stop: () => stopped.push(i) };
     },
   };
@@ -122,6 +129,16 @@ describe('KokoroPlayer', () => {
     const expected = [50, 50, 350, 750, 1050];
     log.forEach((e, i) => expect(e.t - expected[i]!).toBeGreaterThanOrEqual(0));
     log.forEach((e, i) => expect(e.t - expected[i]!).toBeLessThanOrEqual(20));
+  });
+
+  it('from silence, starts with a short chunk; behind other speech, chunks are whole sentences', async () => {
+    const { player, synth } = setup();
+    const long = `First part, ${'x'.repeat(FIRST_CHUNK_CHARS)} end.`;
+    player.speak({ id: 1, text: long, voice: 'af_heart', speed: 1 }, false);
+    player.speak({ id: 2, text: long, voice: 'af_heart', speed: 1 }, true);
+    await vi.runAllTimersAsync();
+
+    expect(synth.requests).toEqual(['First part,', `${'x'.repeat(FIRST_CHUNK_CHARS)} end.`, long]);
   });
 
   it('plays enqueued utterances back to back and reports each one', async () => {
@@ -180,10 +197,102 @@ describe('KokoroPlayer', () => {
     player.pause();
     await vi.advanceTimersByTimeAsync(5000);
     expect(log.some((e) => e.event.type === 'end')).toBe(false);
-    player.resume();
+    expect(player.resume()).toBe(true);
     await vi.runAllTimersAsync();
     expect(log.at(-1)!.event.type).toBe('end');
     expect(log.at(-1)!.t).toBeGreaterThan(5000);
+    expect(player.resume()).toBe(false); // nothing left to continue
+  });
+
+  it('resume backs up to the start of the phrase, replaying its audio without synthesising again', async () => {
+    const { player, log, synth, audio } = setup();
+    // One chunk from t=50 ms at 100 ms a character: "then" is at 0.8 s, "more." at 1.3 s.
+    player.speak({ id: 1, text: 'Hi you, then more.', voice: 'af_heart', speed: 1 }, false);
+    await vi.advanceTimersByTimeAsync(1150); // 1.1 s into the audio, during "then"
+    player.pause();
+    await vi.advanceTimersByTimeAsync(2000);
+    const before = log.length;
+    player.resume();
+    await vi.runAllTimersAsync();
+
+    expect(synth.requests).toEqual(['Hi you, then more.']);
+    // The chunk replays from "then", 0.3 s back, at the moment of the resume.
+    expect(audio.played.at(-1)!.offset).toBeCloseTo(0.8);
+    expect(audio.played.at(-1)!.at).toBeCloseTo(1.15);
+    expect(log.slice(before).map((e) => e.event)).toEqual([
+      { type: 'word', charIndex: 8, length: 4 },
+      { type: 'word', charIndex: 13, length: 5 },
+      { type: 'end', charIndex: 18 },
+    ]);
+    // "then" again at once, then the rest 0.3 s later than it would have been.
+    expect(log.at(-2)!.t - log.at(-3)!.t).toBeGreaterThanOrEqual(480);
+    expect(log.at(-2)!.t - log.at(-3)!.t).toBeLessThanOrEqual(520);
+  });
+
+  it('in the first phrase, resume backs up to the start of the chunk', async () => {
+    const { player, audio } = setup();
+    player.speak({ id: 1, text: 'Hi you, then more.', voice: 'af_heart', speed: 1 }, false);
+    await vi.advanceTimersByTimeAsync(550); // during "you,"
+    player.pause();
+    player.resume();
+    expect(audio.played.at(-1)).toMatchObject({ offset: 0 });
+    expect(audio.played.at(-1)!.at).toBeCloseTo(0.55);
+  });
+
+  it('a backed-up start moves to the pause after the punctuation', async () => {
+    const audio = fakeAudio();
+    // Loud everywhere except 0.6–0.8 s, the pause after "you,".
+    const synth = {
+      async synthesize({ text }: { text: string }): Promise<Synthesis> {
+        await new Promise((r) => setTimeout(r, 50));
+        const samples = new Float32Array(text.length).fill(0.5);
+        samples[6] = samples[7] = 0;
+        return { audio: samples, sampleRate: 10 };
+      },
+    };
+    const player = new KokoroPlayer(synth, () => {}, () => audio.out);
+    player.speak({ id: 1, text: 'Hi you, then more.', voice: 'af_heart', speed: 1 }, false);
+    await vi.advanceTimersByTimeAsync(1150);
+    player.pause();
+    player.resume();
+    // Both quiet frames are in the pause; the one nearer the estimate (0.8 s) wins.
+    expect(audio.played.at(-1)!.offset).toBeCloseTo(0.7);
+  });
+
+  it('later chunks and their events move back by the same amount', async () => {
+    const { player, log, audio } = setup();
+    player.speak({ id: 1, text: 'Hi you, then. Go.', voice: 'af_heart', speed: 1 }, false);
+    await vi.runAllTimersAsync();
+    const unpaused = log.find((e) => e.event.type === 'end')!.t;
+    log.length = 0;
+
+    player.speak({ id: 2, text: 'Hi you, then. Go.', voice: 'af_heart', speed: 1 }, false);
+    const start = Date.now();
+    await vi.advanceTimersByTimeAsync(1150); // during "then.", 0.3 s after it starts
+    player.pause();
+    player.resume();
+    await vi.runAllTimersAsync();
+    // "Go." was already scheduled; it is replayed 0.3 s later, and so is the end.
+    const go = audio.played.filter((p) => p.samples === 3).at(-1)!;
+    expect(go.offset).toBe(0);
+    const end = log.find((e) => e.event.type === 'end')!.t - start;
+    expect(end - unpaused).toBeGreaterThanOrEqual(280);
+    expect(end - unpaused).toBeLessThanOrEqual(320);
+  });
+
+  it('a pause before the audio output exists still holds the first chunk', async () => {
+    const audio = fakeAudio();
+    const log: TtsEvent[] = [];
+    let created = 0;
+    const player = new KokoroPlayer(fakeSynth(), (_, event) => log.push(event), () => (created++, audio.out));
+    player.speak({ id: 1, text: 'Hold me.', voice: 'af_heart', speed: 1 }, false);
+    player.pause();
+    await vi.advanceTimersByTimeAsync(5000);
+    expect(created).toBe(1);
+    expect(log).toEqual([]);
+    player.resume();
+    await vi.runAllTimersAsync();
+    expect(log.at(-1)?.type).toBe('end');
   });
 
   it('finishes an utterance with nothing to say without synthesising', async () => {

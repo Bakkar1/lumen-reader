@@ -53,6 +53,9 @@ export class FakeTtsEngine implements TtsEngine {
     return { wordEvents: (voiceName ?? this.defaultVoice) !== FAKE_VOICE_NO_WORDS, minRate: 0.1, maxRate: 10 };
   }
 
+  /** Nothing to load. */
+  prepare(): void {}
+
   speak(text: string, options: SpeakOptions, onEvent: (event: TtsEvent) => void): void {
     if (!options.enqueue) this.stop();
     const wordEvents = this.capabilities(options.voiceName).wordEvents;
@@ -66,12 +69,13 @@ export class FakeTtsEngine implements TtsEngine {
     this.clearTimer();
   }
 
-  resume(): void {
-    if (this.pausedRemaining === null) return;
+  async resume(): Promise<boolean> {
+    if (this.pausedRemaining === null) return false;
     const remaining = this.pausedRemaining;
     this.pausedRemaining = null;
     if (this.current) this.schedule(remaining);
     else this.startNext();
+    return true;
   }
 
   stop(): void {

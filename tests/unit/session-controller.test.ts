@@ -115,22 +115,50 @@ describe('SessionController', () => {
     expect(await t.engine.isSpeaking()).toBe(false);
   });
 
-  it('pause then resume continues from the paused sentence', async () => {
+  it('pause holds the speech and resume continues it mid-sentence', async () => {
     const t = setup();
     await load(t.controller);
-    await vi.advanceTimersByTimeAsync(170); // into sentence 1
+    await vi.advanceTimersByTimeAsync(170); // into sentence 1, after "Four"
     t.controller.control(1, 'pause');
     expect(t.lastState(1)).toMatchObject({ status: 'paused', index: 1 });
-    expect(await t.engine.isSpeaking()).toBe(false);
+    expect(await t.engine.isSpeaking()).toBe(true);
 
     const wordsBefore = t.of(1, 'word').length;
     await vi.advanceTimersByTimeAsync(1000);
-    expect(t.of(1, 'word')).toHaveLength(wordsBefore); // no stale events
+    expect(t.of(1, 'word')).toHaveLength(wordsBefore); // nothing moves while paused
 
     t.speak.mockClear();
     t.controller.control(1, 'resume');
+    expect(t.lastState(1)).toMatchObject({ status: 'playing', index: 1 });
+    await vi.advanceTimersByTimeAsync(30);
+    expect(t.speak).not.toHaveBeenCalled();
+    expect(t.of(1, 'word').at(-1)).toEqual({ type: 'word', index: 1, charIndex: 20, length: 5 }); // "five"
+  });
+
+  it('resume re-speaks the sentence when the engine lost the held speech', async () => {
+    const t = setup();
+    await load(t.controller);
+    await vi.advanceTimersByTimeAsync(170);
+    t.controller.control(1, 'pause');
+    vi.spyOn(t.engine, 'resume').mockResolvedValueOnce(false);
+
+    t.speak.mockClear();
+    t.controller.control(1, 'resume');
+    await vi.advanceTimersByTimeAsync(0);
     expect(t.speak.mock.calls[0]?.[0]).toBe(from(1));
     expect(t.lastState(1)).toMatchObject({ status: 'playing', index: 1 });
+  });
+
+  it('with a voice without word events, pause stops and resume re-speaks the sentence', async () => {
+    const t = setup({ voiceName: FAKE_VOICE_NO_WORDS });
+    await load(t.controller);
+    await vi.advanceTimersByTimeAsync(170);
+    t.controller.control(1, 'pause');
+    expect(await t.engine.isSpeaking()).toBe(false);
+
+    t.speak.mockClear();
+    t.controller.control(1, 'resume');
+    expect(t.speak.mock.calls[0]?.[0]).toBe(from(t.lastState(1)!.index));
   });
 
   it('toggle pauses a playing session and resumes a paused one', async () => {
@@ -188,6 +216,11 @@ describe('SessionController', () => {
     t.controller.setRate(2);
     expect(t.speak).not.toHaveBeenCalled();
     expect(t.lastState(1)).toMatchObject({ status: 'paused', rate: 2 });
+
+    // The held speech was at the old speed: resume speaks the sentence again at the new one.
+    t.controller.control(1, 'resume');
+    expect(t.speak.mock.calls[0]?.[0]).toBe(from(0));
+    expect(t.speak.mock.calls[0]?.[1]).toMatchObject({ rate: 2 });
   });
 
   it('clamps to the voice cap and reports the effective speed', async () => {

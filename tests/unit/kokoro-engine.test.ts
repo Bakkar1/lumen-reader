@@ -15,7 +15,7 @@ const fake = vi.hoisted(() => {
       getContexts: async () => (state.hasDocument ? [{}] : []),
       sendMessage: async (m: Record<string, unknown>) => {
         state.sent.push(m);
-        return m.type === 'isSpeaking' ? true : null;
+        return m.type === 'isSpeaking' || m.type === 'resume' ? true : null;
       },
       onMessage: { addListener: (l: (typeof state.listeners)[number]) => state.listeners.push(l) },
     },
@@ -89,6 +89,18 @@ describe('KokoroTtsEngine', () => {
     create.mockRestore();
   });
 
+  it('prepare opens the document once, ahead of the speak that follows', async () => {
+    const engine = new KokoroTtsEngine();
+    const create = vi.spyOn(fake.browser.offscreen, 'createDocument');
+    engine.prepare();
+    engine.prepare();
+    engine.speak('Hello.', { rate: 1 }, () => {});
+    await flush();
+    expect(create).toHaveBeenCalledTimes(1);
+    expect(fake.state.sent).toMatchObject([{ type: 'speak', text: 'Hello.' }]);
+    create.mockRestore();
+  });
+
   it('does not open a document just to stop, pause or ask whether it is speaking', async () => {
     const engine = new KokoroTtsEngine();
     engine.stop();
@@ -96,5 +108,15 @@ describe('KokoroTtsEngine', () => {
     expect(await engine.isSpeaking()).toBe(false);
     expect(fake.state.hasDocument).toBe(false);
     expect(fake.state.sent).toEqual([]);
+  });
+
+  it('resume reports whether the document continued held speech, and false without a document', async () => {
+    const engine = new KokoroTtsEngine();
+    expect(await engine.resume()).toBe(false);
+    expect(fake.state.sent).toEqual([]);
+
+    fake.state.hasDocument = true;
+    expect(await engine.resume()).toBe(true);
+    expect(fake.state.sent).toEqual([{ target: 'lumen-offscreen', type: 'resume' }]);
   });
 });

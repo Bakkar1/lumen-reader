@@ -37,9 +37,16 @@ export interface VoiceCapabilities {
 
 export interface TtsEngine {
   getVoices(): Promise<TtsVoice[]>;
+  /** Reading is likely to start soon: load whatever the first `speak` would otherwise wait for. */
+  prepare(): void;
   speak(text: string, options: SpeakOptions, onEvent: (event: TtsEvent) => void): void;
+  /** Holds speech where it is; nothing is lost and no events fire until `resume`. */
   pause(): void;
-  resume(): void;
+  /**
+   * Continues held speech, possibly backing up to the start of the phrase it
+   * paused in; false when nothing was held (or it was lost), so the caller must speak again.
+   */
+  resume(): Promise<boolean>;
   /** Interrupts the current utterance and cancels all queued ones. */
   stop(): void;
   isSpeaking(): Promise<boolean>;

@@ -13,19 +13,27 @@ export interface Chunk {
 /** Comfortably under Kokoro's token limit for English text. */
 export const MAX_CHUNK_CHARS = 300;
 
+/**
+ * Nothing is heard until the first chunk is fully synthesised, so speech that
+ * starts from silence opens with a short one; the rest is synthesised while it plays.
+ */
+export const FIRST_CHUNK_CHARS = 80;
+
 const SENTENCE = /[^.!?…]*(?:[.!?…]+["'”’)\]]*|$)\s*/g;
 
-export function splitChunks(text: string, maxChars = MAX_CHUNK_CHARS): Chunk[] {
+export function splitChunks(text: string, maxChars = MAX_CHUNK_CHARS, firstMaxChars = maxChars): Chunk[] {
   const chunks: Chunk[] = [];
   for (const m of text.matchAll(SENTENCE)) {
     if (m[0].length === 0) continue;
     let offset = m.index;
     let rest = m[0];
-    while (rest.length > maxChars) {
-      const cut = breakPoint(rest, maxChars);
+    let limit = chunks.length === 0 ? firstMaxChars : maxChars;
+    while (rest.length > limit) {
+      const cut = breakPoint(rest, limit);
       push(chunks, rest.slice(0, cut), offset);
       offset += cut;
       rest = rest.slice(cut);
+      limit = maxChars;
     }
     push(chunks, rest, offset);
   }

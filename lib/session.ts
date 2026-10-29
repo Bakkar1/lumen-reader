@@ -106,15 +106,20 @@ type LoadMessage = Extract<TabToBackground, { type: 'load' }>;
  * network voices), so sentences flow together within one. The current
  * sentence is tracked from word events, or for voices without them estimated
  * from the voice's measured speed. Skipping, jumping and rate/voice changes
- * restart from a sentence; pause is "stop and remember the sentence" and
- * resume re-speaks it. That is sentence-level precision, as the spec allows,
- * and it behaves the same for every voice and across a service-worker restart.
+ * restart from a sentence. Pause holds the engine's speech and resume
+ * continues it from the start of the phrase (Kokoro backs up to the last
+ * comma or full stop without synthesising again); when the held speech no longer fits or no longer
+ * exists (a skip or a rate/voice change while paused, a voice without word
+ * events, a service-worker restart, a closed offscreen document), resume
+ * re-speaks the sentence instead.
  */
 export class SessionController {
   private session: Session | null = null;
   private settings: PlaybackSettings;
   /** Bumped whenever playback is restarted or halted, so stale TTS events are ignored. */
   private generation = 0;
+  /** Paused with the engine holding the rest of the speech, so resume continues it mid-sentence. */
+  private held = false;
   private voices: TtsVoice[] = [];
   /** Voices that finished an utterance without any word event. */
   private learnedNoWords = new Set<string>();
@@ -162,14 +167,14 @@ export class SessionController {
     switch (action) {
       case 'play':
       case 'resume':
-        if (s.status !== 'playing') this.playFrom(s.index);
+        if (s.status !== 'playing') this.play(s);
         break;
       case 'pause':
         if (s.status === 'playing') this.pause();
         break;
       case 'toggle':
         if (s.status === 'playing') this.pause();
-        else this.playFrom(s.index);
+        else this.play(s);
         break;
       case 'stop':
         this.stop();
@@ -295,6 +300,24 @@ export class SessionController {
     return this.session?.tabId === tabId ? this.session : null;
   }
 
+  /** Continues held speech where it paused, otherwise speaks from the current sentence. */
+  private play(s: Session): void {
+    if (!this.held) {
+      this.playFrom(s.index);
+      return;
+    }
+    this.held = false;
+    const generation = this.generation;
+    s.status = 'playing';
+    this.publish();
+    void this.deps.engine.resume().then((resumed) => {
+      if (resumed || generation !== this.generation || this.session !== s || s.status !== 'playing') return;
+      // The held speech was lost (its offscreen document closed): speak the sentence again.
+      this.halt();
+      this.playFrom(s.index);
+    });
+  }
+
   private playFrom(index: number): void {
     const s = this.session;
     if (!s) return;
@@ -393,6 +416,8 @@ export class SessionController {
   private skipTo(s: Session, index: number): void {
     if (s.status === 'playing') this.playFrom(index);
     else if (s.status === 'paused') {
+      // The held speech is for the old position.
+      this.halt();
       s.index = index;
       this.publish();
     }
@@ -401,7 +426,11 @@ export class SessionController {
   private pause(): void {
     const s = this.session;
     if (!s) return;
-    this.halt();
+    // Without word events, sentence timing runs on timers that the engine's pause would not hold.
+    if (this.deps.engine.capabilities(s.voiceName ?? undefined).wordEvents === true) {
+      this.deps.engine.pause();
+      this.held = true;
+    } else this.halt();
     s.status = 'paused';
     this.savePosition(s);
     this.publish();
@@ -431,12 +460,17 @@ export class SessionController {
   private restartIfPlaying(): void {
     const s = this.session;
     if (s?.status === 'playing') this.playFrom(s.index);
-    else this.publish();
+    else {
+      // The held speech has the old rate or voice; resume re-speaks with the new one.
+      if (s?.status === 'paused') this.halt();
+      this.publish();
+    }
   }
 
-  /** Silences the engine and invalidates every outstanding utterance. */
+  /** Silences the engine and invalidates every outstanding utterance, including held speech. */
   private halt(): void {
     this.generation++;
+    this.held = false;
     this.deps.engine.stop();
   }
 
