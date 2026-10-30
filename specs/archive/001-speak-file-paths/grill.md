@@ -1,8 +1,8 @@
 ---
 feature: 001-speak-file-paths
 artifact: grill
-status: draft
-updated: 2026-10-29
+status: approved
+updated: 2026-10-30
 ---
 
 # Grill — Speak file paths without pausing
@@ -118,18 +118,38 @@ A dot followed by a space, or at the end of the text, still ends the sentence.
 - Recommendation: Out of scope: only the dot rule applies to them.
 - Answer: Out of scope
 
+## Follow-up round 1 (during spec)
+
+#### Q14 — Dot directly followed by closing punctuation ("stop." Then…, (see the docs.) Next…)
+
+- Options: Still a sentence end (Recommended) / Say "dot" anyway
+- Recommendation: Still a sentence end: only a letter, digit, '/', or a path-continuing dot (../) after the dot makes it a spoken "dot"; prose never says "stop dot".
+- Answer: Still a sentence end
+
+#### Q15 — How '~' in ~/ paths is spoken
+
+- Options: Say "home" (Recommended) / Say "tilde" / Leave it to the voice
+- Recommendation: Say "home": it is what '~' means and reads naturally.
+- Answer: Say "home"
+
+#### Q16 — Other URL symbols (: ? = & #)
+
+- Options: Leave them to the voice (Recommended) / Speak them as words
+- Recommendation: Leave them to the voice: only dot, slash and @ are rewritten; keeps scope small.
+- Answer: Leave them to the voice
+
 ## Shared understanding
 
 **Goal.** Paths, filenames, domains, URLs and emails are read straight through with no pause, and their dots are spoken. Example: `docs/agents/issue-tracker.md` → "docs slash agents slash issue tracker dot md", with no gap.
 
-**Dot rule.** A dot directly followed by a character (no space) is not a sentence end. It is spoken as "dot" and never splits the text into separate audio chunks. A dot followed by whitespace or at the end of the text still ends the sentence as today (`See docs/x.md.` → "… dot md", then the sentence ends). A leading dot counts too: `.env` → "dot env", `./scripts` → "dot slash scripts", `../lib` → "dot dot slash lib". Covers bare filenames (`README.md`), domains, emails and code names (`Node.js`).
+**Dot rule.** A dot directly followed by a letter, a digit, a `/`, or another dot that continues a path (`../`) is not a sentence end. It is spoken as "dot" and never splits the text into separate audio chunks. A dot followed by whitespace, by closing punctuation (quotes, brackets, etc.), or at the end of the text still ends the sentence as today (`See docs/x.md.` → "… dot md", then the sentence ends; `He said "stop." Then` has no "dot"). A leading dot counts too: `.env` → "dot env", `./scripts` → "dot slash scripts", `../lib` → "dot dot slash lib". Covers bare filenames (`README.md`), domains, emails and code names (`Node.js`).
 
 **Exceptions, kept as today:**
 - Dotted abbreviations of single letters (e.g., i.e., U.S.A.): no "dot".
 - A single dot between digits is a decimal: `3.14` → "3 point 1 4". Two or more dots between digit groups are spoken as "dot": `1.2.3`, `192.168.0.1`.
 - An ellipsis (three dots or `…`), even with no space after it, is a pause, never "dot dot dot". Two dots directly before `/` are a path (`../`).
 
-**Slash.** Spoken as "slash", but only in path-like words: a word that starts with `/`, `./`, `../` or `~/`, has two or more slashes, or has a slash plus a dot. Prose such as and/or, 24/7 and km/h is unchanged.
+**Slash.** Spoken as "slash", but only in path-like words: a word that starts with `/`, `./`, `../` or `~/`, has two or more slashes, or has a slash plus a dot. Prose such as and/or, 24/7 and km/h is unchanged. A leading `~` in `~/` is spoken as "home": `~/notes/todo.md` → "home slash notes slash todo dot md".
 
 **Hyphen and underscore** in paths and filenames are silent word breaks ("issue tracker", "my file dot py").
 
@@ -137,7 +157,7 @@ A dot followed by a space, or at the end of the text, still ends the sentence.
 
 **Emails.** '@' is spoken as "at": "name at example dot com".
 
-**Out of scope:** pronouncing extensions (left to the voice, so `md`, `json` etc. sound however Kokoro says them); Windows backslash paths (only the dot rule applies to them); any change to the displayed text, sentence segmentation, sentence highlighting, skipping or click-to-jump.
+**Out of scope:** pronouncing extensions (left to the voice, so `md`, `json` etc. sound however Kokoro says them); other URL symbols such as `:`, `?`, `=`, `&`, `#` (left to the voice; only dot, slash and @ are rewritten); Windows backslash paths (only the dot rule applies to them); any change to the displayed text, sentence segmentation, sentence highlighting, skipping or click-to-jump.
 
 **Highlighting.** The spoken text is longer than the displayed text. Word-highlight drift within a sentence that contains a path is acceptable; the sentence highlight stays exact.
 

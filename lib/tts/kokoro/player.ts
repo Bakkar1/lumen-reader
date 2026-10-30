@@ -1,6 +1,7 @@
 import type { TtsEvent } from '../engine';
 import { FIRST_CHUNK_CHARS, MAX_CHUNK_CHARS, splitChunks, wordTimings, type Chunk, type WordTiming } from './chunks';
 import type { SynthesisRequest, SynthesisResult } from './protocol';
+import { spokenText } from './spoken';
 
 export interface PlayerUtterance {
   id: number;
@@ -165,7 +166,8 @@ export class KokoroPlayer {
         const chunk = u.chunks[u.scheduled]!;
         let synthesis: Synthesis;
         try {
-          synthesis = await this.synth.synthesize({ text: chunk.text, voice: u.voice, speed: u.speed });
+          // Kokoro hears the spoken form; the chunk, and so every event, stays on the displayed text.
+          synthesis = await this.synth.synthesize({ text: spokenText(chunk.text), voice: u.voice, speed: u.speed });
         } catch (err) {
           if (generation === this.generation) this.fail(u, err instanceof Error ? err.message : String(err));
           break;

@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { FIRST_CHUNK_CHARS, splitChunks, wordTimings } from '@/lib/tts/kokoro/chunks';
 import { KokoroPlayer, type AudioOut, type Synthesis } from '@/lib/tts/kokoro/player';
+import { spokenText } from '@/lib/tts/kokoro/spoken';
 import { DEFAULT_KOKORO_VOICE, KOKORO_VOICES, kokoroVoice } from '@/lib/tts/kokoro/voices';
 import type { TtsEvent } from '@/lib/tts/engine';
 
@@ -32,6 +33,43 @@ describe('splitChunks', () => {
     for (const c of chunks) expect(c.text.length).toBeLessThanOrEqual(12);
   });
 
+  it('does not end a chunk inside a file path, but still ends one at a dot followed by a space', () => {
+    const text = 'See docs/agents/issue-tracker.md now. Next.';
+    const chunks = splitChunks(text);
+    expect(chunks).toEqual([
+      { text: 'See docs/agents/issue-tracker.md now.', offset: 0 },
+      { text: 'Next.', offset: 38 },
+    ]);
+    for (const c of chunks) expect(text.slice(c.offset, c.offset + c.text.length)).toBe(c.text);
+  });
+
+  it('does not end a chunk at a leading or inner dot of a word, but does after an ellipsis', () => {
+    const text = 'Load .env from ../lib with Node.js now. Then wait...what so…yes';
+    const chunks = splitChunks(text);
+    expect(chunks).toEqual([
+      { text: 'Load .env from ../lib with Node.js now.', offset: 0 },
+      { text: 'Then wait...', offset: 40 },
+      { text: 'what so…', offset: 52 },
+      { text: 'yes', offset: 60 },
+    ]);
+    for (const c of chunks) expect(text.slice(c.offset, c.offset + c.text.length)).toBe(c.text);
+  });
+
+  it('measures the limit on the spoken form, which is longer than the displayed text for paths', () => {
+    const text = `Files ${Array.from({ length: 30 }, (_, i) => `a${i}/b.c`).join(' ')} done.`;
+    const chunks = splitChunks(text, 100);
+    expect(chunks.length).toBeGreaterThan(3);
+    for (const c of chunks) expect(spokenText(c.text).length).toBeLessThanOrEqual(100);
+    for (const c of chunks) expect(text.slice(c.offset, c.offset + c.text.length)).toBe(c.text);
+  });
+
+  it('breaks a path or URL longer than the limit after a slash', () => {
+    const text = 'example.com/docs/agents/issue-tracker.md';
+    const chunks = splitChunks(text, 30);
+    expect(chunks.map((c) => c.text)).toEqual(['example.com/', 'docs/agents/', 'issue-tracker.md']);
+    for (const c of chunks) expect(text.slice(c.offset, c.offset + c.text.length)).toBe(c.text);
+  });
+
   it('can hold only the first chunk to a shorter limit', () => {
     const text = 'aaaa, bbbb cccc dddd. eeee ffff gggg hhhh.';
     const chunks = splitChunks(text, 30, 8);
@@ -45,6 +83,15 @@ describe('wordTimings', () => {
     expect(wordTimings({ text: 'ab cd', offset: 10 }, 1)).toEqual([
       { at: 0, charIndex: 10, length: 2 },
       { at: 0.6, charIndex: 13, length: 2 },
+    ]);
+  });
+
+  it('places words by their position in the spoken text', () => {
+    // Spoken: "See a slash b slash c now" (25 chars), with "a/b/c" at 4 and "now" at 22.
+    expect(wordTimings({ text: 'See a/b/c now', offset: 0 }, 25)).toEqual([
+      { at: 0, charIndex: 0, length: 3 },
+      { at: 4, charIndex: 4, length: 5 },
+      { at: 22, charIndex: 10, length: 3 },
     ]);
   });
 });
@@ -129,6 +176,21 @@ describe('KokoroPlayer', () => {
     const expected = [50, 50, 350, 750, 1050];
     log.forEach((e, i) => expect(e.t - expected[i]!).toBeGreaterThanOrEqual(0));
     log.forEach((e, i) => expect(e.t - expected[i]!).toBeLessThanOrEqual(20));
+  });
+
+  it('synthesises a sentence with a file path as one spoken request, with events on the displayed text', async () => {
+    const { player, log, synth } = setup();
+    player.speak({ id: 1, text: 'See docs/agents/issue-tracker.md now.', voice: 'af_heart', speed: 1 }, false);
+    await vi.runAllTimersAsync();
+
+    expect(synth.requests).toEqual(['See docs slash agents slash issue tracker dot md now.']);
+    expect(log.map((e) => e.event)).toEqual([
+      { type: 'start' },
+      { type: 'word', charIndex: 0, length: 3 },
+      { type: 'word', charIndex: 4, length: 28 },
+      { type: 'word', charIndex: 33, length: 4 },
+      { type: 'end', charIndex: 37 },
+    ]);
   });
 
   it('from silence, starts with a short chunk; behind other speech, chunks are whole sentences', async () => {
